@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -73,6 +75,7 @@ public class NBTEditor {
     public static JTree nbtTree;
     public static TagNodeBase copy;
     public static String version = "1.2";
+    private static File lastDirectoryInfo = new File(System.getProperty("user.home"), ".nbteditor_lastdir");
 
     public static File file;
     public static File lastDirectory;
@@ -85,11 +88,25 @@ public class NBTEditor {
         } catch (Exception ex) {
         }
 
+
+        if(lastDirectoryInfo.exists())  {
+            try {
+                lastDirectory = new File(new String(Files.readAllBytes(lastDirectoryInfo.toPath())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         frame = new JFrame();
         new DropTarget(frame, new DropListener());
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                try {
+                    Files.write(lastDirectoryInfo.toPath(), lastDirectory.toString().getBytes(StandardCharsets.UTF_8));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 if (modified) {
                     int result = JOptionPane.showConfirmDialog(frame, "File " + (file != null ? ("\"" + file.getName() + "\" ") : "") + "has been modified. Save file?", "Save", JOptionPane.YES_NO_CANCEL_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
