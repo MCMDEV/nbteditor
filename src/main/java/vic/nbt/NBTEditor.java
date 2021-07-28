@@ -98,6 +98,7 @@ public class NBTEditor {
         }
 
         frame = new JFrame();
+        frame.setIconImage(Toolkit.getDefaultToolkit().createImage(ClassLoader.getSystemResource("package.png")));
         new DropTarget(frame, new DropListener());
         frame.addWindowListener(new WindowAdapter() {
             @Override
